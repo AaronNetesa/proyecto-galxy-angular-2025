@@ -1,3 +1,4 @@
+import { MatInputModule } from '@angular/material/input';
 import { Component, OnInit, AfterViewInit, ViewChild, inject } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -17,6 +18,7 @@ import { DataListadoBodyRequestEquipoTrabajoI } from '../../interfaces/configura
 import { ModalEliminarComponent } from '../modal-eliminar/modal-eliminar.component';
 import { ModalAgregarEquipoTrabajoComponent } from '../modal-agregar-equipo-trabajo/modal-agregar-equipo-trabajo.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-equipo-trabajo',
@@ -35,6 +37,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatDialogModule,
     MatSnackBarModule /*Mensaje Alert*/,
     MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatInputModule
   ]
 })
 export class EquipoTrabajoPageComponent implements OnInit, AfterViewInit {

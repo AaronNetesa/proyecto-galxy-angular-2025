@@ -15,6 +15,7 @@ import { DataListadoBodyRequestTarifariosI } from '../../interfaces/configuracio
 import { ConfiguracionTarifariosService } from '../../services/configuracion-tarifas.service';
 import { ModalAgregarTarifasComponent } from '../modal-agregar-tarifas/modal-agregar-tarifas.component';
 import { CommonModule } from '@angular/common';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-tarifas',
@@ -31,8 +32,8 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
-    RouterLink,
-    CommonModule
+    CommonModule,
+    MatInputModule
   ],
   templateUrl: './tarifas-page.component.html',
   styleUrl: './tarifas-page.component.scss'
