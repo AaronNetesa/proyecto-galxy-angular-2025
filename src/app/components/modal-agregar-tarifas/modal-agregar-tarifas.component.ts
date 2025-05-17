@@ -7,6 +7,8 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-modal-agregar-tarifas',
@@ -16,7 +18,9 @@ import { CommonModule } from '@angular/common';
     MatCardModule,
     MatDialogModule,
     MatButtonModule,
-    CommonModule
+    CommonModule,
+    MatInputModule,
+    MatFormFieldModule
   ],
   templateUrl: './modal-agregar-tarifas.component.html',
   styleUrl: './modal-agregar-tarifas.component.scss'
@@ -29,7 +33,7 @@ export class ModalAgregarTarifasComponent implements OnInit{
   private _snackBar = inject(MatSnackBar);
 
   public myFormNewTarifario:FormGroup = this.fb.group({
-    nombre: ["",[Validators.required]],
+    nombre: ["", [Validators.required, Validators.maxLength(60)]],
     usuario: [999,[Validators.required]],
   })
 

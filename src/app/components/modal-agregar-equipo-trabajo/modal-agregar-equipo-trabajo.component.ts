@@ -7,6 +7,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConfiguracionEquipoTrabajoService } from '../../services/configuracion-equipo-trabajo.service';
 import { PostBodyRequestEquipoTrabajoI } from '../../interfaces/configuracion-equipo-trabajo.interface';
 import { CommonModule } from '@angular/common';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-modal-agregar-equipo-trabajo',
@@ -19,7 +21,9 @@ import { CommonModule } from '@angular/common';
     MatDialogModule, /*Ventana Alert*/
     MatIconModule,
     MatButtonModule,
-    MatSnackBarModule /*Mensaje Alert*/
+    MatSnackBarModule, /*Mensaje Alert*/
+    MatInputModule,
+    MatFormFieldModule
   ]
 })
 export class ModalAgregarEquipoTrabajoComponent implements OnInit {
@@ -34,9 +38,9 @@ export class ModalAgregarEquipoTrabajoComponent implements OnInit {
 
   public myFormNewEquipoTrabajo: FormGroup = this.fb.group({
     codigo: [0],
-    nombre: ['', [Validators.required]],
+    nombre: ['', [Validators.required, Validators.maxLength(60)]],
     usuario: [999, [Validators.required]],
-    descripcion:    ["",[Validators.required]],
+    descripcion: ["",[Validators.required, Validators.maxLength(500)]],
   });
 
   ngOnInit(): void {

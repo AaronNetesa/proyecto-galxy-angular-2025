@@ -15,6 +15,25 @@
     </div>
   </div>
 
+  <div class="row mb-4" *ngIf="mensajeSalida">
+    <div class="col-12">
+      <div
+        class="alert"
+        [ngClass]="{
+          'alert-success': mensajeTipo === 'success',
+          'alert-danger' : mensajeTipo === 'error'
+        }"
+        role="alert"
+      >
+        <mat-icon inline [color]="mensajeTipo === 'error' ? 'warn' : 'primary'">
+          check_circle
+        </mat-icon>
+        {{ mensajeSalida }}
+      </div>
+    </div>
+  </div>
+
+
 
   <!-- Buscador -->
   <mat-form-field appearance="outline" class="w-100 mb-3 rounded-3 bg-light-subtle">

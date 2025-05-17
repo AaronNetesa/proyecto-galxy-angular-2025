@@ -47,6 +47,10 @@ export class TarifasPageComponent implements OnInit{
   router=inject(Router)
   public displayedColumns: string[] = ['nombre', 'accion'];
   public dataSource = new MatTableDataSource<DataListadoBodyRequestTarifariosI>();
+
+  public mensajeSalida: string = '';
+  public mensajeTipo: 'success' | 'error' = 'success';
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   private _snackBar = inject(MatSnackBar);
 
@@ -70,50 +74,62 @@ export class TarifasPageComponent implements OnInit{
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-  agregarTarifa(){
-    const dialogRef = this.dialog.open(ModalAgregarTarifasComponent,{
-      disableClose:true,
-      // minWidth:900,
+
+  agregarTarifa() {
+    const dialogRef = this.dialog.open(ModalAgregarTarifasComponent, {
+      disableClose: true,
       minWidth: '30vw',
       autoFocus: false,
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        if (result.action === 'add' && result.data) {
-          this.listTarifario.push(result.data);
-          this.dataSource.data = [...this.listTarifario];
-          setTimeout(() => {
-            this.paginator.lastPage();
-          }, 100);
-        }
+      if (!result) return;
+
+      this.mensajeSalida = '';
+
+      if (result.action === 'add' && result.data) {
+        this.listTarifario.push(result.data);
+        this.dataSource.data = [...this.listTarifario];
+        setTimeout(() => this.paginator.lastPage(), 100);
+
+        this.mensajeSalida = '✅ Tarifa agregada correctamente.';
+        this.mensajeTipo = 'success';
+
+        setTimeout(() => this.mensajeSalida = '', 5000);
       }
-    })
+    });
   }
-  eliminarTarifa(cod:number){
-    const dialogRef = this.dialog.open(ModalEliminarComponent,{
-      // disableClose:true,
+
+  eliminarTarifa(cod: number) {
+    const dialogRef = this.dialog.open(ModalEliminarComponent, {
+      disableClose: true,
       minWidth: '30vw',
       autoFocus: false,
       data: "¿Está seguro de eliminar esta Tarifa?"
-    })
-    dialogRef.afterClosed().subscribe(result =>{
-      if(result){
-        this.configuracionTarifariosService.deleteTarifarios(cod,999).subscribe(
-          (rpta)=>{
-            this._snackBar.open(rpta.mensaje, 'Cerrar', {
-              duration: 3000,
-              verticalPosition: 'top',
-              horizontalPosition: 'end',
-            });
-            // this.obtenerListadoEquipoTrabajo();
-            this.listTarifario = this.listTarifario.filter(item => item.cod_trfro !== cod);
-            this.dataSource.data = [...this.listTarifario];
-          }
-        )
-      }
-    })
+    });
+
+    dialogRef.afterClosed().subscribe(confirm => {
+      if (!confirm) return;
+
+      this.configuracionTarifariosService.deleteTarifarios(cod, 999)
+        .subscribe(rpta => {
+          this.listTarifario = this.listTarifario.filter(item => item.cod_trfro !== cod);
+          this.dataSource.data = [...this.listTarifario];
+
+          this.mensajeSalida = rpta.mensaje;
+          this.mensajeTipo = 'error';
+
+          this._snackBar.open(rpta.mensaje, 'Cerrar', {
+            duration: 3000,
+            verticalPosition: 'top',
+            horizontalPosition: 'end',
+          });
+
+          setTimeout(() => this.mensajeSalida = '', 5000);
+        });
+    });
   }
+
   modificar(cod_trfro: number){
     this.router.navigate(['equipo-trabajo/equipo-trabajo/editar-tarifas', cod_trfro]);
   }

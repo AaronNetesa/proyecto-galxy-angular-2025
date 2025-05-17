@@ -47,6 +47,9 @@ export class EquipoTrabajoPageComponent implements OnInit, AfterViewInit {
   public displayedColumns: string[] = ['nombre', 'descripcion', 'accion'];
   public dataSource = new MatTableDataSource<DataListadoBodyRequestEquipoTrabajoI>();
 
+  public mensajeSalida: string = '';
+  public mensajeTipo: 'success' | 'warning' | 'error' = 'success';
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private configuracionEquipoTrabajoService = inject(ConfiguracionEquipoTrabajoService);
@@ -77,55 +80,74 @@ export class EquipoTrabajoPageComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  agregarEditarEquipoTrabajo(cod:number){
-
-    const dialogRef = this.dialog.open(ModalAgregarEquipoTrabajoComponent,{
-      disableClose:true,
-      // minWidth:900,
+  agregarEditarEquipoTrabajo(cod: number) {
+    const dialogRef = this.dialog.open(ModalAgregarEquipoTrabajoComponent, {
+      disableClose: true,
       minWidth: '30vw',
       autoFocus: false,
-      data : {cod}
+      data: { cod }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        if (result.action === 'add' && result.data) {
-          this.listEquipoTrabajos.push(result.data);
-          this.dataSource.data = [...this.listEquipoTrabajos];
-          setTimeout(() => {
-            this.paginator.lastPage();
-          }, 100);
-        }else if (result.action === 'update' && result.data) {
-          this.listEquipoTrabajos = this.listEquipoTrabajos.map(item =>
-            item.cod_eqpos_trbjo === result.data.cod_eqpos_trbjo ? result.data : item
-          );
-          this.dataSource.data = [...this.listEquipoTrabajos];
-        }
+      if (!result) return;
+
+      this.mensajeSalida = '';
+      this.mensajeTipo   = 'success';  // <-- marca siempre success por defecto
+
+      if (result.action === 'add' && result.data) {
+        this.listEquipoTrabajos.push(result.data);
+        this.dataSource.data = [...this.listEquipoTrabajos];
+        this.mensajeSalida = '✅ Equipo agregado correctamente.';
+        setTimeout(() => this.paginator.lastPage(), 100);
       }
-    })
+      else if (result.action === 'update' && result.data) {
+        this.listEquipoTrabajos = this.listEquipoTrabajos.map(item =>
+          item.cod_eqpos_trbjo === result.data.cod_eqpos_trbjo ? result.data : item
+        );
+        this.dataSource.data = [...this.listEquipoTrabajos];
+        this.mensajeSalida = '✅ Equipo actualizado correctamente.';
+      }
+      else if (result.action === 'refresh') {
+        // si quisieras aquí un warning en lugar de success:
+        this.mensajeTipo   = 'error';
+        this.mensajeSalida = '⚠️ El Equipo de Trabajo ya existe.';
+      }
+
+      setTimeout(() => this.mensajeSalida = '', 5000);
+    });
   }
 
-  eliminarEquipoTrabajo(cod:number){
-    const dialogRef = this.dialog.open(ModalEliminarComponent,{
-      minWidth: '30vw',
-      autoFocus: false,
-      data: "¿Está seguro de eliminar este Equipo de Trabajo?"
-    })
-    dialogRef.afterClosed().subscribe(result =>{
-      if(result){
-        this.configuracionEquipoTrabajoService.deleteEquipoTrabajo(cod,999).subscribe(
-          (rpta)=>{
+  eliminarEquipoTrabajo(cod: number) {
+      const dialogRef = this.dialog.open(ModalEliminarComponent, {
+        disableClose: true,
+        minWidth: '30vw',
+        autoFocus: false,
+        data: "¿Está seguro de eliminar este Equipo de Trabajo?"
+      });
+
+      dialogRef.afterClosed().subscribe(confirm => {
+        if (!confirm) return;
+
+        this.configuracionEquipoTrabajoService
+          .deleteEquipoTrabajo(cod, 999)
+          .subscribe(rpta => {
+            this.listEquipoTrabajos = this.listEquipoTrabajos
+              .filter(item => item.cod_eqpos_trbjo !== cod);
+            this.dataSource.data = [...this.listEquipoTrabajos];
+
+            this.mensajeSalida = rpta.mensaje;
+            this.mensajeTipo   = 'error';
+
             this._snackBar.open(rpta.mensaje, 'Cerrar', {
               duration: 3000,
               verticalPosition: 'top',
               horizontalPosition: 'end',
             });
-            this.listEquipoTrabajos = this.listEquipoTrabajos.filter(item => item.cod_eqpos_trbjo !== cod);
-            this.dataSource.data = [...this.listEquipoTrabajos];
-          }
-        )
-      }
-    })
+
+            setTimeout(() => this.mensajeSalida = '', 5000);
+          });
+      });
   }
+
 
 }
