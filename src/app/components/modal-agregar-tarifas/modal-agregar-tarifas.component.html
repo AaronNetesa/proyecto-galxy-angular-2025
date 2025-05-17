@@ -1,0 +1,29 @@
+<form class="py-4 px-2" [formGroup]="myFormNewTarifario" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="mat-typography custom-scroll">
+
+    <div class="fw-bold text-primary fs-5 mb-4">
+      Agregar Tarifa
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">Nombre Tarifa*</label>
+      <input
+        type="text"
+        class="form-control text-secondary"
+        formControlName="nombre" />
+
+      <div *ngIf="myFormNewTarifario.controls['nombre'].getError('required') && myFormNewTarifario.controls['nombre'].touched"
+           class="text-primary small fst-italic mt-1">
+        Campo requerido
+      </div>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="submit" mat-flat-button color="primary">
+      Agregar
+    </button>
+    <button type="button" mat-stroked-button mat-dialog-close>Cancelar</button>
+  </mat-dialog-actions>
+</form>
